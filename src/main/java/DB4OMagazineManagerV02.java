@@ -13,6 +13,7 @@ import com.db4o.query.Predicate;
 import com.db4o.ta.TransparentActivationSupport;
 import com.db4o.ta.TransparentPersistenceSupport;
 import controller.FileController;
+import model.Article;
 import model.Author;
 import model.Magazine;
 
@@ -107,29 +108,66 @@ public class DB4OMagazineManagerV02 {
 	
 	// Method to LIST all articles from the database using QBE example
 	public void listArticles() {
-		
+
+		Article articleExample = new Article();
+		try {
+			List<Article> articles = db.queryByExample(articleExample);
+			for(Article article : articles){
+				System.out.println(article);
+			}
+		} finally {
+			//db.close();
+		}
 	}
 	
 	// Method to LIST all authors from the database using QBE example
 	public void getAuthors() {
-		
+		Author authorExample = new Author();
+		try {
+			List<Author> authors = db.queryByExample(authorExample);
+			for(Author author : authors){
+				System.out.println(author);
+			}
+		} finally {
+			//db.close();
+		}
 	}
 	
 	// Method to QUERY articles by id_revista using QBE example
 	public void getMagazineContentByMagazineId(int _id) {
-		
+		ObjectSet<Magazine> result = db.queryByExample(new Magazine(_id, null,null));
+		while(result.hasNext()) {
+			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			System.out.println(result.next());
+			System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		}
 	}
 	
 	// Method to DELETE all objects from the database using QBE example
 	public void clearDatabase()
 	{
-	
+		ObjectSet<Article> result_articles = db.queryByExample(new Article());
+		ObjectSet<Author> result_autors = db.queryByExample(new Author());
+		ObjectSet<Magazine> result_magazines = db.queryByExample(new Magazine());
+		while (result_articles.hasNext()){
+			db.delete(result_articles.next());
+		}
+		while (result_autors.hasNext()){
+			db.delete(result_autors.next());
+		}
+		while (result_magazines.hasNext()){
+			db.delete(result_magazines.next());
+		}
+
 	}
 	
 	// Method to DELETE revistes by id_revista using QBE example
 	public void deleteMagazineContentByMagazineId(int _id)
 	{
-		
+		ObjectSet<Magazine> result = db.queryByExample(new Magazine(_id, null, null));
+		while(result.hasNext()) {
+			db.delete(result.next());
+		}
 	}
 	
 	// Method to DELETE an author from the database using QBE example
@@ -153,18 +191,31 @@ public class DB4OMagazineManagerV02 {
 	// Method to QUERY authors by name using Native Queries
 	public void getAuthorsByName(String _nom)
 	{
-		
+		ObjectSet<Author> result = db.queryByExample(new Author(0,_nom,null,null,false));
+		while(result.hasNext()) {
+			System.out.println("******************************************************************************************************************************");
+			System.out.println(result.next());
+			System.out.println("******************************************************************************************************************************");
+		}
 	}
 	
 	// Method to QUERY articles by author's name using Native Queries
 	public void getArticlesByAuthorName(String _nom)
 	{
-		
+		ObjectSet<Article> result = db.queryByExample(new Article(0,null,null,false,new Author(0,_nom,null,null,false)));
+		while(result.hasNext()) {
+			System.out.println("---------------------------------------------------------------------------------------------------------------------------------");
+			System.out.println(result.next());
+			System.out.println("---------------------------------------------------------------------------------------------------------------------------------");
+		}
 	}
 	
 	// Method to DELETE articles by author's name using Native Queries
 	public void deleteArticlesByAuthorName(String _nom)
 	{
-		
+		ObjectSet<Article> result = db.queryByExample(new Article(0,null,null,false,new Author(0,_nom,null,null,false)));
+		while(result.hasNext()) {
+			db.delete(result.next());
+		}
 	}
 }	
